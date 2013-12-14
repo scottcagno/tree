@@ -1,14 +1,4 @@
-// *
-// * Copyright 2014, Scott Cagno, All rights reserved.
-// * BSD Licensed - sites.google.com/site/bsdc3license
-// *
-// * B+Tree Implementation
-// *
 package tree
-
-import (
-	"bytes"
-)
 
 // tree
 type Tree struct {
@@ -16,37 +6,73 @@ type Tree struct {
 	root *Node
 }
 
-// initialize tree
+// initialize and return tree
 func InitTree(deg int) *Tree {
 	return &Tree{
-		deg: deg,
-		root: &Node{
-			make([]Idx, 0),
-			make([]Dat, 0),
-		},
+		deg:  int,
+		root: InitNode(),
 	}
 }
 
-// search for a record with search-key value k
-func (self *Tree) Search(k []byte) *Node {
-	if self.root.IsLeaf() {
-		return &self.root
-	}
-	// drill down...
-	return nil
-}
-
-// insert
+// insert data
 func (self *Tree) Insert(k, v []byte) bool {
-	return false
+	node := search(k, self.root)
+	if len(node.records) == self.deg-1 {
+		// split
+		// leaf := InitNode()
+	}
+	node.records = append(node.records, Data{k, v})
 }
 
-// return
-func (self *Tree) Return(k []byte) ([]byte, bool) {
-	return nil, false
+// node
+type Node struct {
+	children []Index
+	records  []Data
+	infinity *Node
 }
 
-// delete
-func (self *Tree) Delete(k []byte) bool {
-	return false
+// initialize and return node
+func InitNode() *Node {
+	return &Node{
+		children: make([]Index, 0),
+		records:  make([]Data, 0),
+		infinity: nil,
+	}
+}
+
+// check to see if node is leaf
+func (self *Node) IsLeaf() bool {
+	return len(children) == 0
+}
+
+// check to see if node is full
+func (self *Node) IsFull(n int) bool {
+	return len(children) == n
+}
+
+// index struct
+type Index struct {
+	key   *[]byte
+	child *Node
+}
+
+// initialize and return index struct
+func InitIndex(k *[]byte) Index {
+	return Index{
+		key:   k,
+		child: nil,
+	}
+}
+
+// data struct
+type Data struct {
+	key, val []byte
+}
+
+// initialize and return data struct
+func InitData(k, v []byte) Data {
+	return Data{
+		key: k,
+		val: v,
+	}
 }
